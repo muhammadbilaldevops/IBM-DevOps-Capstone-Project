@@ -1,0 +1,13 @@
+$ nosetests -v
+test_create_account ... ok
+test_delete_account ... ok
+test_duplicate_email ... ok
+test_list_accounts ... ok
+test_missing_required_fields ... ok
+test_read_account ... ok
+test_security_and_cors_headers ... ok
+test_update_account ... ok
+
+Ran 8 tests in 0.2s
+
+OK
