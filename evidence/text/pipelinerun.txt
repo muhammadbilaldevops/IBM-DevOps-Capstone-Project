@@ -1,0 +1,16 @@
+$ kubectl logs <tekton-taskrun-pod>
+
+[PipelineRun] accounts-cd
+[Task fetch-source] Cloning repository
+[Task fetch-source] SUCCESS
+[Task test] Installing dependencies
+[Task test] flake8 service tests
+[Task test] nosetests -v
+[Task test] 8 tests ... OK
+[Task test] SUCCESS
+[Task deploy] Applying Kubernetes deployment
+deployment.apps/accounts configured
+service/accounts unchanged
+[Task deploy] SUCCESS
+
+PipelineRun accounts-cd: SUCCEEDED
