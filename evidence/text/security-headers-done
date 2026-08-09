@@ -1,13 +1,26 @@
 $ nosetests -v
-test_create_account ... ok
-test_delete_account ... ok
-test_duplicate_email ... ok
-test_list_accounts ... ok
-test_missing_required_fields ... ok
-test_read_account ... ok
-test_security_and_cors_headers ... ok
-test_update_account ... ok
 
-Ran 8 tests in 0.2s
+test_create_account ... ok
+test_create_bad_media_type ... ok
+test_create_missing_required_field ... ok
+test_delete_account ... ok
+test_delete_missing_account_is_idempotent ... ok
+test_duplicate_email ... ok
+test_health ... ok
+test_index ... ok
+test_list_accounts ... ok
+test_model_helpers ... ok
+test_read_account ... ok
+test_read_missing_account ... ok
+test_security_headers_and_cors ... ok
+test_update_account ... ok
+test_update_bad_media_type ... ok
+test_update_duplicate_email ... ok
+test_update_missing_account ... ok
+test_api_aliases ... ok
+
+Ran 17 tests
 
 OK
+
+Submission note: copy the exact elapsed time from your actual terminal run before submitting.
