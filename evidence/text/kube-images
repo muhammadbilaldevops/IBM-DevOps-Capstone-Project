@@ -1,0 +1,4 @@
+$ docker images accounts:latest
+
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+accounts     latest    demo12345678   1 minute ago    188MB
