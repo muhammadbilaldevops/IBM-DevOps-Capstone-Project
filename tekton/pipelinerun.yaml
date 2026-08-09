@@ -3,6 +3,7 @@ kind: PipelineRun
 metadata:
   generateName: cd-pipeline-run-
 spec:
+  serviceAccountName: pipeline
   pipelineRef:
     name: cd-pipeline
   params:
