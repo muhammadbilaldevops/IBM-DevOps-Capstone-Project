@@ -19,6 +19,7 @@ jobs:
     container: python:3.11-slim
 
     steps:
+      # Required by IBM Capstone Task 21.
       - name: Checkout
         uses: actions/checkout@v4
 
