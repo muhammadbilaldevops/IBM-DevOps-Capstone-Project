@@ -1,40 +1,57 @@
-# 🚀 IBM DevOps Capstone Project — Accounts Microservice
+# 🚀 IBM DevOps Capstone Project — Customer Accounts Microservice
 
 [![CI Build](https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/actions/workflows/ci-build.yaml/badge.svg)](https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/actions/workflows/ci-build.yaml)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-REST_API-black?logo=flask)](https://flask.palletsprojects.com/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-ready-326CE5?logo=kubernetes)](https://kubernetes.io/)
+[![Tekton](https://img.shields.io/badge/Tekton-CD-FD495C?logo=tekton)](https://tekton.dev/)
 
-> A production-style Flask Accounts REST API built for the IBM DevOps Capstone assignment, with automated testing, linting, security headers, Docker packaging, Kubernetes manifests, and a Tekton CD pipeline.
+> 🎯 A secure, tested Customer Accounts REST microservice built as the IBM DevOps Capstone Project. The repository demonstrates Agile planning, TDD, REST CRUD operations, GitHub Actions CI, security headers and CORS, Docker, Kubernetes, and Tekton continuous delivery.
 
-## ✨ What is included?
+## 📌 Capstone objectives
 
-| Area | Implementation |
+- 📝 Plan work with user stories, backlog and sprint artifacts.
+- 🧪 Develop the Accounts service using test-driven development.
+- 🔄 Implement Create, Read, List, Update and Delete operations.
+- 📊 Maintain **95%+ test coverage** with `nosetests` and coverage.
+- 🔐 Add Flask-Talisman security headers and Flask-CORS policies.
+- ⚙️ Automate linting and tests with GitHub Actions.
+- 🐳 Build the service as a Docker image named `accounts`.
+- ☸️ Deploy the image to Kubernetes with two replicas.
+- 🔁 Automate clone → lint → test → build → deploy with Tekton.
+
+## 🧰 Technology stack
+
+| Area | Technology |
 |---|---|
-| REST API | Create, Read, List, Update, Delete accounts |
-| Persistence | SQLite via Flask-SQLAlchemy |
-| Testing | `pytest` + `nosetests` + coverage |
-| Quality | Flake8 + Pylint configuration |
-| Security | Flask-Talisman security headers + Flask-CORS |
-| CI | GitHub Actions workflow in `.github/workflows/ci-build.yaml` |
-| Container | Hardened Python 3.11 Docker image |
-| Kubernetes | Deployment, Service, probes, 2 replicas |
-| CD | Tekton Pipeline + PipelineRun |
-| Assignment evidence | `evidence/text/` contains expected-output text captures |
+| Language | Python 3.11 |
+| API | Flask |
+| Database | SQLite locally / PostgreSQL-compatible via `DATABASE_URI` |
+| ORM | Flask-SQLAlchemy |
+| Testing | `nosetests` + coverage |
+| Quality | Flake8 + Pylint |
+| Security | Flask-Talisman + Flask-CORS |
+| CI | GitHub Actions |
+| Container | Docker |
+| Orchestration | Kubernetes / OpenShift |
+| CD | Tekton |
 
-## 🗂️ Project structure
+## 🗂️ Repository structure
 
 ```text
 .
 ├── .github/workflows/ci-build.yaml
 ├── evidence/
-│   └── text/
+│   ├── images/                 # reference evidence images
+│   ├── text/                   # named text evidence files
+│   └── ASSIGNMENT-MAP.md
 ├── kubernetes/
-│   ├── deployment.yaml
 │   ├── namespace.yaml
+│   ├── deployment.yaml
 │   └── service.yaml
-├── scripts/curl-demo.sh
+├── scripts/
+│   └── curl-demo.sh
 ├── service/
 │   ├── __init__.py
 │   ├── config.py
@@ -43,8 +60,10 @@
 ├── tekton/
 │   ├── pipeline.yaml
 │   ├── pipelinerun.yaml
+│   ├── tasks.yaml
 │   └── README.md
-├── tests/test_routes.py
+├── tests/
+│   └── test_routes.py
 ├── Dockerfile
 ├── Procfile
 ├── requirements.txt
@@ -54,53 +73,91 @@
 └── README.md
 ```
 
-## ⚡ Quick start
+## ⚡ Run locally
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 
 export FLASK_APP=service
 flask run --host=0.0.0.0 --port=8080
 ```
 
-Then open `http://localhost:8080/`.
+Open `http://localhost:8080/`.
 
-### REST endpoints
+### Expected root response
+
+```json
+{"name":"Account REST API Service","version":"1.0"}
+```
+
+Health check:
+
+```bash
+curl -sS http://localhost:8080/health
+```
+
+```json
+{"status":"OK"}
+```
+
+## 🌐 REST API
+
+The IBM capstone convention is `/accounts`. The repository also keeps `/api/accounts` aliases for compatibility with the earlier implementation.
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `POST` | `/api/accounts` | Create an account |
-| `GET` | `/api/accounts` | List all accounts |
-| `GET` | `/api/accounts/<id>` | Read one account |
-| `PUT` | `/api/accounts/<id>` | Update an account |
-| `DELETE` | `/api/accounts/<id>` | Delete an account |
+| `POST` | `/accounts` | Create an account |
+| `GET` | `/accounts` | List all accounts |
+| `GET` | `/accounts/<id>` | Read an account |
+| `PUT` | `/accounts/<id>` | Update an account |
+| `DELETE` | `/accounts/<id>` | Delete an account |
 
-Example:
+Example CREATE request:
 
 ```bash
-curl -X POST http://localhost:8080/api/accounts \
+curl -sS -X POST http://localhost:8080/accounts \
   -H "Content-Type: application/json" \
-  -d '{"name":"Jane Doe","email":"jane@example.com","address":"1 Main St"}'
+  -d '{"name":"Jane Doe","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}'
 ```
 
-## 🧪 Quality checks
+## 🧪 Quality gates
 
 ```bash
-flake8 service tests
+flake8 service tests --count --statistics
 nosetests -v
-coverage report
-pylint service
+coverage report -m
 ```
 
-The CI workflow runs checkout → Python setup → dependency installation → Flake8 → nosetests → coverage.
+`setup.cfg` is configured with a **95% minimum coverage threshold**. The CI workflow executes checkout → dependency installation → Flake8 → `nosetests` → coverage.
+
+## 🔐 Security
+
+Flask-Talisman adds security headers including `X-Frame-Options`, `X-Content-Type-Options`, Content-Security-Policy and Referrer-Policy. Flask-CORS allows browser clients to call the Accounts resources.
+
+For local development, HTTPS enforcement is disabled. To enable it:
+
+```bash
+export TALISMAN_FORCE_HTTPS=true
+```
+
+Never commit passwords, tokens, registry credentials, or other secrets.
 
 ## 🐳 Docker
+
+Build and run:
 
 ```bash
 docker build -t accounts:latest .
 docker run --rm -p 8080:8080 accounts:latest
+```
+
+Verify:
+
+```bash
+curl -sS http://localhost:8080/
 ```
 
 ## ☸️ Kubernetes
@@ -109,59 +166,40 @@ docker run --rm -p 8080:8080 accounts:latest
 kubectl apply -f kubernetes/namespace.yaml
 kubectl apply -f kubernetes/deployment.yaml
 kubectl apply -f kubernetes/service.yaml
-
-kubectl get deployments,pods,rs,services -l app=accounts -n accounts
-```
-
-For Minikube:
-
-```bash
-minikube image load accounts:latest
-kubectl apply -f kubernetes/deployment.yaml
+kubectl get deployment,pods,rs,service -l app=accounts -n accounts
 kubectl port-forward -n accounts service/accounts 8080:8080
 ```
 
-## 🔐 Security
-
-`service/__init__.py` enables CORS for `/api/*` and configures Flask-Talisman security headers. HTTPS enforcement is disabled by default for local development and can be enabled with:
-
-```bash
-export TALISMAN_FORCE_HTTPS=true
-```
-
-Do **not** commit credentials or production secrets.
+The deployment uses two replicas and HTTP readiness/liveness probes on port `8080`.
 
 ## 🔄 Tekton CD
 
+The CD pipeline is intentionally ordered as:
+
+```text
+clone → lint + tests → build-image → deploy
+```
+
+Apply the pipeline resources in an OpenShift/Tekton environment:
+
 ```bash
+kubectl apply -f tekton/tasks.yaml
 kubectl apply -f tekton/pipeline.yaml
 kubectl create -f tekton/pipelinerun.yaml
 ```
 
-The sample pipeline clones the source, runs linting/tests first, and deploys Kubernetes manifests only after the test task succeeds.
+The Buildah task must be configured with an image registry that the cluster can push to. The supplied PipelineRun uses the OpenShift `pipeline` service account convention.
 
-## 📸 Assignment evidence
+## 📎 Assignment evidence
 
-The `evidence/text/` directory contains expected-output text captures generated from this implementation. A complete downloadable bundle also contains the PNG reference/expected-output images for every upload task. These are useful for preparing the IBM assignment submission; for grading, replace board-style reference images with authentic screenshots from the actual IBM/Kanban environment if the grader requires them.
+`evidence/text/` contains named, reproducible text evidence for the text questions. `evidence/images/` contains **reference/expected-output images** for the upload questions.
 
-See [`evidence/ASSIGNMENT-MAP.md`](evidence/ASSIGNMENT-MAP.md) for a task-by-task checklist.
+⚠️ **Important for grading:** the IBM assignment explicitly asks for screenshots of the learner's Kanban board. Reference images cannot truthfully prove that your IBM board was changed. For the final submission, upload authentic screenshots from your own IBM/GitHub Kanban environment showing the requested story in the requested column.
 
-## 📝 Assignment checklist
+See [`SUBMISSION-ANSWERS.md`](SUBMISSION-ANSWERS.md) and [`evidence/ASSIGNMENT-MAP.md`](evidence/ASSIGNMENT-MAP.md) for the complete submission checklist.
 
-- [x] README with project name and CI badge
-- [x] `user-story.md` user-story template
-- [x] `setup.cfg` for nosetests, coverage, Flake8, and Pylint
-- [x] CRUD REST endpoints
-- [x] Security headers and CORS
-- [x] GitHub Actions CI
-- [x] Dockerfile
-- [x] Kubernetes deployment and service
-- [x] Tekton pipeline definitions
-- [x] Expected cURL/test/Kubernetes/Tekton outputs
-- [x] PNG evidence reference images generated in the downloadable bundle
+## ❤️ Capstone status
 
-## 📚 Notes
+The application code, tests, CI definition, Dockerfile, Kubernetes manifests, and Tekton definitions are maintained together so the repository can be used as a reproducible DevOps demonstration.
 
-This repository is intentionally self-contained and uses a lightweight SQLite database for local development. Kubernetes and Tekton require a compatible cluster with the corresponding tooling installed.
-
-**Built with ❤️ for the IBM DevOps Capstone learning project.**
+**Built with Python 🐍 · Flask 🌐 · Docker 🐳 · Kubernetes ☸️ · Tekton 🔁**
