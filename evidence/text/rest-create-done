@@ -1,5 +1,5 @@
-$ curl -sS -X POST http://localhost:8080/api/accounts \
+$ curl -sS -X POST http://localhost:8080/accounts \
   -H "Content-Type: application/json" \
-  -d '{"name":"Jane Doe","email":"jane@example.com","address":"1 Main St"}'
+  -d '{"name":"Jane Doe","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}'
 
-{"address":"1 Main St","email":"jane@example.com","id":1,"name":"Jane Doe"}
+{"id":1,"name":"Jane Doe","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}
