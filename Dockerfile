@@ -16,8 +16,11 @@ COPY setup.cfg .
 COPY pytest.ini .
 COPY .flake8 .
 
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser \
+RUN addgroup --system appgroup \
+    && adduser --system --ingroup appgroup appuser \
+    && mkdir -p /app/instance \
     && chown -R appuser:appgroup /app
+
 USER appuser
 
 EXPOSE 8080
