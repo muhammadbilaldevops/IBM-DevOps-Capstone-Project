@@ -1,130 +1,253 @@
-# 🧾 IBM DevOps Capstone — Submission Answers
+# 🧾 IBM DevOps Capstone — Corrected Submission Guide
 
 Repository: https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project
 
-> **Important:** Tasks 3–6, 8–12, 18, 20, 24, 25, 27, 28, and 33 request screenshots of a Kanban board. The PNGs in `evidence/images/` are polished **expected-output/reference mockups**, not proof that the IBM board was actually changed. If the grader requires an authentic IBM board screenshot, reproduce the board state in the IBM environment and upload that screenshot.
+This file is aligned to the 33 questions in the supplied IBM Capstone assignment.
 
-## URL answers
+> ⚠️ **Important:** Questions that ask for a screenshot of the IBM/Kanban board require a screenshot from the actual board. A generated reference image cannot prove that the learner moved a story. Likewise, Docker image IDs, Kubernetes pod names/IPs and Tekton logs are runtime-generated and must come from a real run.
 
-1. `https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/README.md`
-2. `https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/user-story.md`
-7. `https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/setup.cfg`
-21. `https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/.github/workflows/ci-build.yaml`
-22. `https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/service/__init__.py`
-29. `https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/Dockerfile`
+## 🔗 URL answers
 
-## Text answers
-
-### 13 — CREATE
+**Q1**
 ```text
-$ curl -sS -X POST http://localhost:8080/api/accounts \
+https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/README.md
+```
+
+**Q2**
+```text
+https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/user-story.md
+```
+
+**Q7**
+```text
+https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/setup.cfg
+```
+
+**Q21**
+```text
+https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/.github/workflows/ci-build.yaml
+```
+
+**Q22**
+```text
+https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/service/__init__.py
+```
+
+**Q29**
+```text
+https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project/blob/main/Dockerfile
+```
+
+## 🧪 Q13 — CREATE
+
+```bash
+curl -sS -X POST http://localhost:8080/accounts \
   -H "Content-Type: application/json" \
-  -d '{"name":"Jane Doe","email":"jane@example.com","address":"1 Main St"}'
-
-{"address":"1 Main St","email":"jane@example.com","id":1,"name":"Jane Doe"}
+  -d '{"name":"Jane Doe","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}'
 ```
 
-### 14 — LIST
-```text
-$ curl -sS http://localhost:8080/api/accounts
+Expected successful JSON shape:
 
-[{"address":"1 Main St","email":"jane@example.com","id":1,"name":"Jane Doe"}]
+```json
+{"id":1,"name":"Jane Doe","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}
 ```
 
-### 15 — READ
-```text
-$ curl -sS http://localhost:8080/api/accounts/1
+## 📋 Q14 — LIST
 
-{"address":"1 Main St","email":"jane@example.com","id":1,"name":"Jane Doe"}
+```bash
+curl -sS http://localhost:8080/accounts
 ```
 
-### 16 — UPDATE
-```text
-$ curl -sS -X PUT http://localhost:8080/api/accounts/1 \
+Expected successful JSON shape after Q13:
+
+```json
+[{"id":1,"name":"Jane Doe","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}]
+```
+
+## 🔎 Q15 — READ
+
+```bash
+curl -sS http://localhost:8080/accounts/1
+```
+
+Expected successful JSON:
+
+```json
+{"id":1,"name":"Jane Doe","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}
+```
+
+## ✏️ Q16 — UPDATE
+
+```bash
+curl -sS -X PUT http://localhost:8080/accounts/1 \
   -H "Content-Type: application/json" \
-  -d '{"address":"2 Main St"}'
-
-{"address":"2 Main St","email":"jane@example.com","id":1,"name":"Jane Doe"}
+  -d '{"name":"Jane Updated"}'
 ```
 
-### 17 — DELETE
-```text
-$ curl -i -sS -X DELETE http://localhost:8080/api/accounts/1
+Expected successful JSON shape:
 
+```json
+{"id":1,"name":"Jane Updated","email":"jane@example.com","address":"1 Main St","phone_number":"555-0100","date_joined":"2025-01-15"}
+```
+
+## 🗑️ Q17 — DELETE
+
+```bash
+curl -i -sS -X DELETE http://localhost:8080/accounts/1
+```
+
+Expected status:
+
+```text
 HTTP/1.1 204 NO CONTENT
-Content-Type: text/html; charset=utf-8
 ```
 
-### 19 — CI workflow
-```text
-GitHub Actions: CI Build
-✓ Check out code
-✓ Set up Python
-✓ Install dependencies
-✓ Lint with Flake8
-✓ Unit tests with nosetests
-✓ Coverage report
+## ⚙️ Q19 — GitHub Actions CI output
 
-Result: SUCCESS
+The workflow must visibly show this sequence:
+
+```text
+Checkout
+Install dependencies
+Lint with flake8
+Run unit tests with nosetests
+Coverage report
 ```
 
-### 23 — Security / CORS tests
+The final submission should use the actual successful GitHub Actions run output. Do not invent a run ID or timing.
+
+## 🔐 Q23 — Security/CORS test output
+
+Run:
+
+```bash
+nosetests -v
+```
+
+The actual successful output should end with:
+
 ```text
-Ran 8 tests in 0.2s
+Ran <actual number> tests in <actual time>s
 
 OK
 ```
 
-### 26 — Application JSON
-```json
-{"service":"accounts","status":"ok"}
+and must include the security/CORS test passing.
+
+## ☸️ Q26 — Kubernetes application JSON
+
+The IBM lab expects the application response after launching the service on port 8080. With this corrected implementation:
+
+```bash
+curl -sS http://localhost:8080/
 ```
 
-### 30 — Docker image
+returns:
+
+```json
+{"name":"Account REST API Service","version":"1.0"}
+```
+
+Health endpoint:
+
+```json
+{"status":"OK"}
+```
+
+## 🐳 Q30 — Docker image output
+
+Run:
+
+```bash
+docker build -t accounts:latest .
+docker images accounts:latest
+```
+
+Submit the **actual** output. It must contain:
+
 ```text
 REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
-accounts     latest    demo12345678   1 minute ago    188MB
+accounts     latest    <actual-image-id> <actual-created> <actual-size>
 ```
 
-### 31 — Kubernetes deployment
+Do not submit a fabricated image ID, creation time or size.
+
+## ☸️ Q31 — Kubernetes deployment output
+
+Run:
+
+```bash
+kubectl get deployment,pods,rs,service -l app=accounts -n accounts
+```
+
+Submit the actual output showing:
+
+- `deployment.apps/accounts`
+- two `accounts` pods in `Running` state
+- the Accounts ReplicaSet
+- `service/accounts`
+
+Pod names, ages and cluster IPs are generated by Kubernetes and must be copied from your cluster.
+
+## 🔁 Q32 — Tekton PipelineRun output
+
+Apply:
+
+```bash
+kubectl apply -f tekton/tasks.yaml
+kubectl apply -f tekton/pipeline.yaml
+kubectl create -f tekton/pipelinerun.yaml
+```
+
+Then obtain the complete run log with Tekton, for example:
+
+```bash
+tkn pipelinerun list
+tkn pipelinerun logs <actual-pipelinerun-name> --all
+```
+
+The successful log must visibly contain the pipeline stages:
+
 ```text
-deployment.apps/accounts   2/2     2            2           1m
-pod/accounts-7c9d7c7f8b-a1b2c   1/1     Running   0          1m
-pod/accounts-7c9d7c7f8b-d3e4f   1/1     Running   0          1m
-replicaset.apps/accounts-7c9d7c7f8b   2         2         2       1m
-service/accounts    ClusterIP   10.96.143.21    8080/TCP   1m
+clone
+lint
+tests
+build-image
+deploy
 ```
 
-### 32 — Tekton pipeline
-```text
-[PipelineRun] accounts-cd
-[Task fetch-source] SUCCESS
-[Task test] flake8 service tests
-[Task test] nosetests -v
-[Task test] 8 tests ... OK
-[Task test] SUCCESS
-[Task deploy] deployment.apps/accounts configured
-[Task deploy] service/accounts unchanged
-[Task deploy] SUCCESS
+and finish successfully. **Use the actual log from your cluster; do not paste a fabricated log.**
 
-PipelineRun accounts-cd: SUCCEEDED
-```
+## 🖼️ Screenshot questions
 
-## Screenshot filenames
+Upload authentic screenshots from your IBM/GitHub Kanban board for:
 
-- Task 3: `planning-userstories-done.png`
-- Task 4: `planning-productbacklog-done.png`
-- Task 5: `planning-labels-done.png`
-- Task 6: `planning-kanban-done.png`
-- Task 8: `rest-techdebt-done.png`
-- Task 9: `read-accounts.png`
-- Task 10: `list-accounts.png`
-- Task 11: `update-accounts.png`
-- Task 12: `delete-accounts.png`
-- Task 18: `sprint2-plan.png`
-- Task 20: `ci-kanban-done.png`
-- Task 24: `security-kanban-done.png`
-- Task 25: `sprint3-plan.png`
-- Task 27: `kube-docker-done.png`
-- Task 28: `kube-kubernetes-done.png`
-- Task 33: `cd-pipeline-done.png`
+- Q3 `planning-userstories-done.png`
+- Q4 `planning-productbacklog-done.png`
+- Q5 `planning-labels-done.png`
+- Q6 `planning-kanban-done.png`
+- Q8 `rest-techdebt-done.png`
+- Q9 `read-accounts.png`
+- Q10 `list-accounts.png`
+- Q11 `update-accounts.png`
+- Q12 `delete-accounts.png`
+- Q18 `sprint2-plan.png`
+- Q20 `ci-kanban-done.png`
+- Q24 `security-kanban-done.png`
+- Q25 `sprint3-plan.png`
+- Q27 `kube-docker-done.png`
+- Q28 `kube-kubernetes-done.png`
+- Q33 `cd-pipeline-done.png`
+
+### Exact story names required by the assignment
+
+- **Q8:** `Setting up the development environment`
+- **Q9:** `Read an account from the service`
+- **Q10:** `List all accounts in the service`
+- **Q11:** `Update an account in the service`
+- **Q12:** `Delete an account from the service`
+- **Q20:** `Need the ability to automate continuous integration checks`
+- **Q24:** `Need to add security headers and CORS policies`
+- **Q27:** `Containerize your microservice using Docker`
+- **Q28:** `Deploy your Docker image to Kubernetes`
+- **Q33:** `Create a CD pipeline to automate deployment to Kubernetes`
