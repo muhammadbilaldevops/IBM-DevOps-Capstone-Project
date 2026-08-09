@@ -1,75 +1,102 @@
-"""REST API routes for accounts."""
+"""REST routes for the Customer Accounts service."""
 
-from flask import jsonify, request
+from flask import abort, jsonify, make_response, request
 
-from service.models import Account, db
+from service.models import Account, DataValidationError, db
+
+
+def _account_payload(account):
+    return account.serialize()
+
+
+def _create_account():
+    """Create an Account from a JSON request."""
+    if request.content_type != "application/json":
+        abort(415, description="Content-Type must be application/json")
+
+    account = Account()
+    try:
+        account.deserialize(request.get_json(silent=True))
+    except DataValidationError as error:
+        abort(400, description=str(error))
+
+    if Account.find_by_email(account.email):
+        abort(409, description="Account with that email already exists")
+
+    account.create()
+    response = make_response(jsonify(_account_payload(account)), 201)
+    response.headers["Location"] = f"/accounts/{account.id}"
+    return response
+
+
+def _list_accounts():
+    """Return all Accounts."""
+    return jsonify([_account_payload(account) for account in Account.all()]), 200
+
+
+def _read_account(account_id):
+    """Read one Account."""
+    account = Account.find(account_id)
+    if account is None:
+        abort(404, description=f"Account with id [{account_id}] could not be found.")
+    return jsonify(_account_payload(account)), 200
+
+
+def _update_account(account_id):
+    """Update an existing Account."""
+    account = Account.find(account_id)
+    if account is None:
+        abort(404, description=f"Account with id [{account_id}] could not be found.")
+
+    if request.content_type != "application/json":
+        abort(415, description="Content-Type must be application/json")
+
+    payload = request.get_json(silent=True) or {}
+    merged = account.serialize()
+    merged.update(payload)
+    try:
+        account.deserialize(merged)
+    except DataValidationError as error:
+        abort(400, description=str(error))
+
+    duplicate = Account.query.filter(Account.email == account.email, Account.id != account.id).first()
+    if duplicate:
+        db.session.rollback()
+        abort(409, description="Account with that email already exists")
+
+    account.update()
+    return jsonify(_account_payload(account)), 200
+
+
+def _delete_account(account_id):
+    """Delete an Account. DELETE is idempotent for this service."""
+    account = Account.find(account_id)
+    if account is not None:
+        account.delete()
+    return "", 204
 
 
 def register_routes(app):
-    """Register REST endpoints."""
+    """Register API endpoints on the Flask application."""
 
     @app.get("/")
+    def index():
+        return jsonify(name="Account REST API Service", version="1.0"), 200
+
+    @app.get("/health")
     def health():
-        return jsonify({"service": "accounts", "status": "ok"})
+        return jsonify(status="OK"), 200
 
-    @app.post("/api/accounts")
-    def create_account():
-        data = request.get_json(silent=True) or {}
-        required = ("name", "email")
-        missing = [field for field in required if not data.get(field)]
-        if missing:
-            return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    # The IBM lab uses /accounts. The /api/accounts aliases are retained for
+    # backwards compatibility with the original version of this repository.
+    app.add_url_rule("/accounts", "create_accounts", _create_account, methods=["POST"])
+    app.add_url_rule("/accounts", "list_accounts", _list_accounts, methods=["GET"])
+    app.add_url_rule("/accounts/<int:account_id>", "get_account", _read_account, methods=["GET"])
+    app.add_url_rule("/accounts/<int:account_id>", "update_account", _update_account, methods=["PUT"])
+    app.add_url_rule("/accounts/<int:account_id>", "delete_account", _delete_account, methods=["DELETE"])
 
-        if Account.query.filter_by(email=data["email"]).first():
-            return jsonify({"error": "Account with that email already exists"}), 409
-
-        account = Account(
-            name=data["name"],
-            email=data["email"],
-            address=data.get("address"),
-        )
-        db.session.add(account)
-        db.session.commit()
-        return jsonify(account.to_dict()), 201
-
-    @app.get("/api/accounts")
-    def list_accounts():
-        return jsonify([account.to_dict() for account in Account.query.order_by(Account.id).all()])
-
-    @app.get("/api/accounts/<int:account_id>")
-    def read_account(account_id):
-        account = db.session.get(Account, account_id)
-        if account is None:
-            return jsonify({"error": "Account not found"}), 404
-        return jsonify(account.to_dict())
-
-    @app.put("/api/accounts/<int:account_id>")
-    def update_account(account_id):
-        account = db.session.get(Account, account_id)
-        if account is None:
-            return jsonify({"error": "Account not found"}), 404
-
-        data = request.get_json(silent=True) or {}
-        if "name" in data:
-            account.name = data["name"]
-        if "email" in data:
-            duplicate = Account.query.filter(
-                Account.email == data["email"], Account.id != account.id
-            ).first()
-            if duplicate:
-                return jsonify({"error": "Account with that email already exists"}), 409
-            account.email = data["email"]
-        if "address" in data:
-            account.address = data["address"]
-
-        db.session.commit()
-        return jsonify(account.to_dict())
-
-    @app.delete("/api/accounts/<int:account_id>")
-    def delete_account(account_id):
-        account = db.session.get(Account, account_id)
-        if account is None:
-            return jsonify({"error": "Account not found"}), 404
-        db.session.delete(account)
-        db.session.commit()
-        return "", 204
+    app.add_url_rule("/api/accounts", "api_create_accounts", _create_account, methods=["POST"])
+    app.add_url_rule("/api/accounts", "api_list_accounts", _list_accounts, methods=["GET"])
+    app.add_url_rule("/api/accounts/<int:account_id>", "api_get_account", _read_account, methods=["GET"])
+    app.add_url_rule("/api/accounts/<int:account_id>", "api_update_account", _update_account, methods=["PUT"])
+    app.add_url_rule("/api/accounts/<int:account_id>", "api_delete_account", _delete_account, methods=["DELETE"])
