@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: accounts-cd-
+spec:
+  pipelineRef:
+    name: accounts-cd
+  params:
+    - name: repository
+      value: https://github.com/muhammadbilaldevops/IBM-DevOps-Capstone-Project.git
+    - name: revision
+      value: main
+    - name: image
+      value: accounts:latest
+  workspaces:
+    - name: source
+      emptyDir: {}
