@@ -1,0 +1,23 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: accounts-deploy
+spec:
+  params:
+    - name: image
+      type: string
+  workspaces:
+    - name: source
+  steps:
+    - name: deploy
+      image: bitnami/kubectl:1.31
+      workingDir: $(workspaces.source.path)
+      script: |
+        set -eu
+        sed "s#accounts:latest#$(params.image)#g" kubernetes/deployment.yaml > /tmp/deployment.yaml
+        kubectl apply -f kubernetes/namespace.yaml
+        kubectl apply -f /tmp/deployment.yaml
+        kubectl apply -f kubernetes/service.yaml
+        kubectl rollout status deployment/accounts -n accounts --timeout=180s
+        kubectl get deployment,pods,rs,service -l app=accounts -n accounts
