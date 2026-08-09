@@ -1,82 +1,90 @@
+---
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: accounts-cd
+  name: cd-pipeline
 spec:
+  description: Clone, lint, test, build and deploy the Accounts service.
+  workspaces:
+    - name: pipeline-workspace
   params:
-    - name: repository
+    - name: repo-url
       type: string
-      description: Git repository containing the Accounts service.
+      description: Public Git repository URL.
     - name: revision
       type: string
       default: main
-    - name: image
+    - name: build-image
       type: string
+      description: Full registry image reference to build and push.
       default: accounts:latest
-  workspaces:
-    - name: source
-
   tasks:
-    - name: fetch-source
-      taskSpec:
-        params:
-          - name: repository
-            type: string
-          - name: revision
-            type: string
-        workspaces:
-          - name: source
-        steps:
-          - name: clone
-            image: alpine/git:2.45.2
-            workingDir: $(workspaces.source.path)
-            script: |
-              rm -rf ./*
-              git clone --depth 1 --branch $(params.revision) $(params.repository) .
+    - name: clone
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: pipeline-workspace
       params:
-        - name: repository
-          value: $(params.repository)
+        - name: url
+          value: $(params.repo-url)
         - name: revision
           value: $(params.revision)
+        - name: deleteExisting
+          value: "true"
+
+    - name: lint
+      runAfter: [clone]
+      taskRef:
+        name: flake8
+        kind: ClusterTask
       workspaces:
         - name: source
-          workspace: source
-
-    - name: test
-      runAfter: [fetch-source]
-      taskSpec:
-        workspaces:
-          - name: source
-        steps:
-          - name: test
-            image: python:3.11-slim
-            workingDir: $(workspaces.source.path)
-            script: |
-              python -m pip install --no-cache-dir -r requirements.txt
-              flake8 service tests
-              nosetests -v
-      workspaces:
-        - name: source
-          workspace: source
-
-    - name: deploy
-      runAfter: [test]
-      taskSpec:
-        params:
-          - name: image
-            type: string
-        workspaces:
-          - name: source
-        steps:
-          - name: apply
-            image: bitnami/kubectl:latest
-            workingDir: $(workspaces.source.path)
-            script: |
-              sed "s#accounts:latest#$(params.image)#g" kubernetes/deployment.yaml | kubectl apply -f -
-              kubectl apply -f kubernetes/service.yaml
+          workspace: pipeline-workspace
       params:
         - name: image
-          value: $(params.image)
+          value: python:3.11-slim
+        - name: args
+          value: ["service", "tests", "--count", "--statistics"]
+
+    - name: tests
+      runAfter: [clone]
+      taskRef:
+        name: nose
+        kind: ClusterTask
       workspaces:
         - name: source
-          workspace: source
+          workspace: pipeline-workspace
+      params:
+        - name: args
+          value: "-v"
+
+    - name: build-image
+      runAfter: [lint, tests]
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      params:
+        - name: IMAGE
+          value: $(params.build-image)
+        - name: TLSVERIFY
+          value: "true"
+        - name: DOCKERFILE
+          value: ./Dockerfile
+        - name: CONTEXT
+          value: .
+
+    - name: deploy
+      runAfter: [build-image]
+      taskRef:
+        name: accounts-deploy
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      params:
+        - name: image
+          value: $(params.build-image)
