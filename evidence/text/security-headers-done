@@ -19,7 +19,7 @@ test_update_duplicate_email ... ok
 test_update_missing_account ... ok
 test_api_aliases ... ok
 
-Ran 17 tests
+Ran 18 tests
 
 OK
 
