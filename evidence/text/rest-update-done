@@ -1,0 +1,5 @@
+$ curl -sS -X PUT http://localhost:8080/api/accounts/1 \
+  -H "Content-Type: application/json" \
+  -d '{"address":"2 Main St"}'
+
+{"address":"2 Main St","email":"jane@example.com","id":1,"name":"Jane Doe"}
