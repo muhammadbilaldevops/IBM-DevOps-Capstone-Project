@@ -1,11 +1,9 @@
-$ git push origin main
-
 GitHub Actions: CI Build
-✓ Check out code
-✓ Set up Python
-✓ Install dependencies
-✓ Lint with Flake8
-✓ Unit tests with nosetests
-✓ Coverage report
 
-Result: SUCCESS
+1. Checkout
+2. Install dependencies
+3. Lint with flake8
+4. Run unit tests with nosetests
+5. Coverage report
+
+Submission note: replace this checklist with the actual successful GitHub Actions run output from the repository Actions tab. A fabricated SUCCESS line must not be submitted.
