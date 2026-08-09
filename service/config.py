@@ -1,13 +1,14 @@
-"""Configuration for the Accounts service."""
+"""Application configuration for the Accounts microservice."""
 
 import os
 
 
 class Config:
-    """Base configuration."""
+    """Base Flask configuration."""
 
     SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", "sqlite:///accounts.db"
+        "DATABASE_URI",
+        os.getenv("DATABASE_URL", "sqlite:///accounts.db"),
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TESTING = False
