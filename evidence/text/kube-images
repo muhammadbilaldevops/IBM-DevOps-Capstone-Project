@@ -1,4 +1,7 @@
+$ docker build -t accounts:latest .
 $ docker images accounts:latest
 
 REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
-accounts     latest    demo12345678   1 minute ago    188MB
+accounts     latest    <actual-image-id> <actual-created-time> <actual-size>
+
+Submission note: replace the three angle-bracket values with the real output from the Docker host. They cannot be known in advance.
