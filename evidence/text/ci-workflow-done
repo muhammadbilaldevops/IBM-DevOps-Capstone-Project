@@ -1,0 +1,11 @@
+$ git push origin main
+
+GitHub Actions: CI Build
+✓ Check out code
+✓ Set up Python
+✓ Install dependencies
+✓ Lint with Flake8
+✓ Unit tests with nosetests
+✓ Coverage report
+
+Result: SUCCESS
