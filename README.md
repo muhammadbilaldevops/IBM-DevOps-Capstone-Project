@@ -21,7 +21,7 @@
 | Container | Hardened Python 3.11 Docker image |
 | Kubernetes | Deployment, Service, probes, 2 replicas |
 | CD | Tekton Pipeline + PipelineRun |
-| Assignment evidence | `evidence/` contains expected-output references for every upload/text task |
+| Assignment evidence | `evidence/text/` contains expected-output text captures |
 
 ## 🗂️ Project structure
 
@@ -29,7 +29,6 @@
 .
 ├── .github/workflows/ci-build.yaml
 ├── evidence/
-│   ├── images/
 │   └── text/
 ├── kubernetes/
 │   ├── deployment.yaml
@@ -50,6 +49,7 @@
 ├── Procfile
 ├── requirements.txt
 ├── setup.cfg
+├── SUBMISSION-ANSWERS.md
 ├── user-story.md
 └── README.md
 ```
@@ -142,7 +142,7 @@ The sample pipeline clones the source, runs linting/tests first, and deploys Kub
 
 ## 📸 Assignment evidence
 
-The `evidence/` directory contains **reference/expected-output images and text captures**, generated from this implementation. They are useful for preparing the IBM assignment submission. For grading, replace board-style reference images with your own screenshots from the actual IBM/Kanban environment if the grader requires authentic UI screenshots.
+The `evidence/text/` directory contains expected-output text captures generated from this implementation. A complete downloadable bundle also contains the PNG reference/expected-output images for every upload task. These are useful for preparing the IBM assignment submission; for grading, replace board-style reference images with authentic screenshots from the actual IBM/Kanban environment if the grader requires them.
 
 See [`evidence/ASSIGNMENT-MAP.md`](evidence/ASSIGNMENT-MAP.md) for a task-by-task checklist.
 
@@ -158,7 +158,7 @@ See [`evidence/ASSIGNMENT-MAP.md`](evidence/ASSIGNMENT-MAP.md) for a task-by-tas
 - [x] Kubernetes deployment and service
 - [x] Tekton pipeline definitions
 - [x] Expected cURL/test/Kubernetes/Tekton outputs
-- [x] PNG evidence references for all upload tasks
+- [x] PNG evidence reference images generated in the downloadable bundle
 
 ## 📚 Notes
 
